@@ -1,0 +1,235 @@
+[
+  {
+    "id": "setagaya_noncourse_2025",
+    "municipalityCode": "setagaya",
+    "name": "物価高騰生活支援給付金",
+    "description": "住民税が非課税または均等割のみ課税の世帯への物価高騰対策給付金（1世帯あたり2万円）",
+    "amount": 20000,
+    "amountNote": "1世帯あたり20,000円（一律）",
+    "source": "世田谷区",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02014/30262.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "郵送または区から送付されるQRコード経由のオンライン申請",
+    "requiredDocs": [
+      "区から送付される確認書兼申請書",
+      "振込先口座の通帳またはキャッシュカード"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64", "over65"],
+      "familyTypes":   ["single", "couple", "with_children"],
+      "incomeRanges":  ["under300", "under600", "under800", "over800"],
+      "taxStatuses":   ["equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["none", "body12", "body3", "intellectual13", "intellectual4", "mental1", "nanbyo", "severe_complex"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_housing_support",
+    "municipalityCode": "setagaya",
+    "name": "住居確保給付金",
+    "description": "離職・廃業・収入減少で家賃の支払いが困難になった賃貸世帯への家賃補助。原則3か月・最長9か月。",
+    "amount": 40000,
+    "amountNote": "家賃相当額（単身目安：月額40,000円程度）を原則3か月補助",
+    "source": "世田谷区（ぷらっとホーム世田谷）",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02412/2962.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "窓口のみ（事前に電話で相談予約が必要）",
+    "requiredDocs": [
+      "本人確認書類（運転免許証・マイナンバーカード等）",
+      "離職票・退職証明書（離職の場合）",
+      "収入減少を示す書類（給与明細・確定申告書等）",
+      "賃貸借契約書",
+      "振込先口座の通帳",
+      "ハローワークの求職登録証（求職活動中の場合）"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64", "over65"],
+      "familyTypes":   ["single", "couple", "with_children"],
+      "incomeRanges":  ["under300", "under600"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["reduced", "quit"],
+      "housingTypes":  ["rent"],
+      "disabilities":  ["none", "body12", "body3", "intellectual13", "intellectual4", "mental1", "nanbyo", "severe_complex"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_disability_welfare",
+    "municipalityCode": "setagaya",
+    "name": "心身障害者福祉手当（区制度）",
+    "description": "各種障害者手帳・難病医療券所持者（65歳未満）への区独自の月額手当",
+    "amount": 198000,
+    "amountNote": "月額5,000〜16,500円（障害区分により異なる）× 12か月",
+    "source": "世田谷区",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02083/2692.html",
+    "onlineFormUrl": "https://logoform.jp/f/BVSKr",
+    "applicationMethod": "新規申請は窓口のみ（お住まい担当の保健福祉課へ）。口座変更等の変更届はオンライン可。",
+    "requiredDocs": [
+      "身体障害者手帳・愛の手帳・精神障害者保健福祉手帳（いずれか）",
+      "または指定難病の医療券",
+      "預金通帳（本人名義）",
+      "マイナンバーカードまたは通知カード＋身元確認書類"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64"],
+      "familyTypes":   ["single", "couple", "with_children"],
+      "incomeRanges":  ["under300", "under600", "under800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["body12", "body3", "intellectual13", "intellectual4", "mental1", "nanbyo"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_special_disability",
+    "municipalityCode": "setagaya",
+    "name": "特別障害者手当（国制度）",
+    "description": "日常生活で常時特別な介護が必要な20歳以上の重度障害者への国の月額手当",
+    "amount": 355080,
+    "amountNote": "月額29,590円 × 12か月",
+    "source": "国（世田谷区窓口で申請）",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02083/2693.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "窓口または郵送（お住まい担当の保健福祉課へ）",
+    "requiredDocs": [
+      "認定請求書（窓口で入手）",
+      "世帯状況等届出書",
+      "認定診断書（指定医師作成）",
+      "マイナンバー確認書類",
+      "身元確認書類",
+      "振込先口座の通帳"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["20to64"],
+      "familyTypes":   ["single", "couple", "with_children"],
+      "incomeRanges":  ["under300", "under600", "under800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["body12", "intellectual13", "severe_complex"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_disability_child",
+    "municipalityCode": "setagaya",
+    "name": "障害児福祉手当（国制度）",
+    "description": "日常生活で常時介護が必要な20歳未満の重度障害児への国の月額手当",
+    "amount": 193200,
+    "amountNote": "月額16,100円 × 12か月",
+    "source": "国（世田谷区窓口で申請）",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02083/2693.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "窓口または郵送（お住まい担当の保健福祉課へ）",
+    "requiredDocs": [
+      "認定請求書（窓口で入手）",
+      "世帯状況等届出書",
+      "認定診断書（指定医師作成）",
+      "マイナンバー確認書類",
+      "身元確認書類",
+      "振込先口座の通帳"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20"],
+      "familyTypes":   ["with_children"],
+      "incomeRanges":  ["under300", "under600", "under800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["body12", "intellectual13", "severe_complex"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_severe_disability_tokyo",
+    "municipalityCode": "setagaya",
+    "name": "重度心身障害者手当（東京都制度）",
+    "description": "最重度の知的障害＋精神症状、重複障害、または重度肢体不自由の方への東京都の月額手当",
+    "amount": 720000,
+    "amountNote": "月額60,000円 × 12か月",
+    "source": "東京都（世田谷区窓口で申請）",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02083/2694.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "窓口のみ（お住まい担当の保健福祉課へ。東京都心身障害者福祉センターでの別途判定あり）",
+    "requiredDocs": [
+      "手帳類（愛の手帳または身体障害者手帳）",
+      "印鑑",
+      "マイナンバーカードまたは通知カード＋身元確認書類",
+      "振込先口座の通帳"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64"],
+      "familyTypes":   ["single", "couple", "with_children"],
+      "incomeRanges":  ["under300", "under600", "under800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["severe_complex"],
+      "childSchools":  ["na", "ninkatsu", "private_yochien", "other"]
+    }
+  },
+  {
+    "id": "setagaya_nursery_free",
+    "municipalityCode": "setagaya",
+    "name": "認可保育施設の保育料無償化",
+    "description": "認可保育施設（保育園・認定こども園等）を利用する0〜5歳児がいる世帯の保育料が令和7年9月から無償",
+    "amount": 0,
+    "amountNote": "保育料が実質0円（無償化）。所得制限なし。",
+    "source": "世田谷区",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/01044/10734.html",
+    "onlineFormUrl": null,
+    "applicationMethod": "別途保育認定（施設利用申込時に手続き）。既に在籍の場合は手続き不要の場合あり。",
+    "requiredDocs": [
+      "保育認定申請書（在籍施設または区窓口で入手）",
+      "就労証明書等（保育認定理由の証明書類）"
+    ],
+    "updatedAt": "2025-09-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64", "over65"],
+      "familyTypes":   ["with_children"],
+      "incomeRanges":  ["under300", "under600", "under800", "over800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["none", "body12", "body3", "intellectual13", "intellectual4", "mental1", "nanbyo", "severe_complex"],
+      "childSchools":  ["ninkatsu"]
+    }
+  },
+  {
+    "id": "setagaya_private_kindergarten",
+    "municipalityCode": "setagaya",
+    "name": "私立幼稚園等保護者補助金",
+    "description": "新制度未移行の私立幼稚園に子が通う年収800万円以下世帯への入園料・保育料・預かり保育補助",
+    "amount": 120000,
+    "amountNote": "所得・利用状況により変動（目安：年間数万〜12万円程度）",
+    "source": "世田谷区",
+    "sourceUrl": "https://www.city.setagaya.lg.jp/02236/1653.html",
+    "onlineFormUrl": "http://logoform.jp/form/JqMJ/965261",
+    "applicationMethod": "在籍園経由（申請書は園から配布）または郵送・オンライン（書類アップロード）",
+    "requiredDocs": [
+      "申請書（園から配布、または区窓口・郵送で入手）",
+      "個人番号利用同意書",
+      "課税証明書または納税通知書（令和6年1月1日時点で区外在住の場合）"
+    ],
+    "updatedAt": "2025-03-01",
+    "conditions": {
+      "ageRanges":     ["under20", "20to64", "over65"],
+      "familyTypes":   ["with_children"],
+      "incomeRanges":  ["under300", "under600", "under800"],
+      "taxStatuses":   ["taxed", "equalOnly", "exempt"],
+      "incomeChanges": ["stable", "reduced", "quit"],
+      "housingTypes":  ["rent", "own"],
+      "disabilities":  ["none", "body12", "body3", "intellectual13", "intellectual4", "mental1", "nanbyo", "severe_complex"],
+      "childSchools":  ["private_yochien"]
+    }
+  }
+]
