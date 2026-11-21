@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>取引先一覧 – Hybrid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Hybrid = Skeuomorphism の質感（凹凸・光沢・ダークレール）
+          + Sidebar の機能性（開閉サイドバー・セグメントタブ・シルク背景） */
+:root{
+  --paper:#e8e2d8; --paper2:#f3efe8; --card1:#faf8f3; --card2:#ece6db;
+  --ink:#2a2622; --ink2:#6f675d; --ink3:#a39a8d;
+  --dark1:#37332d; --dark2:#17140f; --dark-ink:#efe9de;
+  --brand:#e0612b; --brand2:#f58a4f;
+  --teal1:#3f9b86; --teal2:#1f6b5c;
+  --green:#2f8f68; --blue:#3d6fb5; --violet:#7a5aa8; --amber:#b9791c; --red:#c2493f;
+  --hi:rgba(255,255,255,.9); --hair:rgba(110,85,50,.14);
+  --raise:0 1px 0 var(--hi) inset,0 -2px 4px rgba(120,95,60,.10) inset,0 8px 18px rgba(90,70,45,.16),0 2px 3px rgba(90,70,45,.18);
+  --sink:0 2px 5px rgba(90,70,45,.22) inset,0 1px 0 var(--hi);
+  --r:22px; --sbw:248px;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,"Noto Sans JP",system-ui,sans-serif;color:var(--ink);min-height:100vh;background:#eee7d8;overflow-x:hidden}
+
+/* silk backdrop (sidebar案) */
+.bg{position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(1100px 600px at 80% -5%,rgba(255,252,244,.95),transparent 60%),
+  radial-gradient(900px 700px at 5% 100%,#f4e9d1,transparent 60%),
+  linear-gradient(170deg,var(--paper2),var(--paper))}
+.bg svg{position:absolute;inset:0;width:100%;height:100%;opacity:.7}
+
+.raised{background:linear-gradient(180deg,var(--card1),var(--card2));border-radius:var(--r);box-shadow:var(--raise);border:1px solid rgba(255,255,255,.6)}
+.dark{background:linear-gradient(180deg,var(--dark1),var(--dark2));color:var(--dark-ink);border:1px solid rgba(0,0,0,.6);box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 14px 28px rgba(30,20,10,.38),0 3px 6px rgba(30,20,10,.4)}
+
+.app{display:grid;grid-template-columns:var(--sbw) 1fr;gap:22px;padding:22px;max-width:1700px;margin:0 auto;transition:grid-template-columns .35s cubic-bezier(.3,.8,.3,1)}
+.app.collapsed{--sbw:76px}
+
+/* ===== sidebar: dark glossy rail + collapsible ===== */
+aside{position:sticky;top:22px;height:calc(100vh - 44px);border-radius:30px;padding:14px 12px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;gap:12px;align-items:center;padding:6px 6px 14px;margin-top:18px}
+.logo{width:42px;height:42px;border-radius:13px;flex:none;background:linear-gradient(160deg,var(--brand2),var(--brand));color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 -3px 5px rgba(120,40,0,.4) inset,0 6px 12px rgba(0,0,0,.45)}
+.brand b{display:block;font-size:14px;white-space:nowrap}.brand small{color:#9b9183;font-size:12px}
+.toggle{position:absolute;top:45px;right:-13px;z-index:5;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;cursor:pointer;padding:0;color:var(--ink2);border:1px solid rgba(255,255,255,.7);background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:0 1px 0 #fff inset,0 4px 10px rgba(60,40,20,.35);transition:.2s}
+.toggle:active{box-shadow:var(--sink)}
+.toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s}
+.app.collapsed .toggle{color:#fff;background:linear-gradient(180deg,var(--brand2),var(--brand));box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 6px 14px rgba(224,97,43,.45)}
+.app.collapsed .toggle svg{transform:rotate(180deg)}
+.nav{overflow:auto;flex:1;padding-bottom:20px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.grp{font-size:10.5px;letter-spacing:.12em;color:#8d8374;padding:16px 12px 6px;font-weight:600;white-space:nowrap}
+.app.collapsed .grp{font-size:0;padding:0;height:1px;margin:12px 14px;background:rgba(255,255,255,.1)}
+.nav a{position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;color:#c9c0b2;text-decoration:none;font-size:13.5px;font-weight:500;white-space:nowrap;transition:.15s}
+.nav a svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.06)}
+/* active: skeuo key-cap in brand orange */
+.nav a.on,.nav a.on:hover{color:#fff;background:linear-gradient(180deg,var(--brand2),var(--brand));box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 -2px 4px rgba(120,40,0,.3) inset,0 6px 14px rgba(224,97,43,.45)}
+.nav a.on svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.nav .n{margin-left:auto;font-size:11px;padding:1px 8px;border-radius:99px;background:rgba(0,0,0,.4);box-shadow:0 1px 3px rgba(0,0,0,.6) inset,0 1px 0 rgba(255,255,255,.1);color:#d8cfc0;font-weight:600}
+.nav a.on .n{background:rgba(0,0,0,.25);color:#fff}
+.app.collapsed .nav a{justify-content:center;padding:11px 0}
+.app.collapsed .nav a .t{display:none}
+.app.collapsed .nav .n{position:absolute;top:7px;right:14px;margin:0;padding:0;width:8px;height:8px;font-size:0;background:var(--brand2);box-shadow:0 0 8px var(--brand2)}
+.app.collapsed .nav a.on .n{background:#fff;box-shadow:none}
+.app.collapsed .brand div:last-child{display:none}
+.app.collapsed .brand{justify-content:center;padding-left:0;padding-right:0}
+
+/* ===== top ===== */
+main{min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.bar{flex:1;max-width:560px;display:flex;align-items:center;gap:10px;padding:9px 18px;border-radius:99px;font-size:13px}
+.bar .dot{width:8px;height:8px;border-radius:50%;background:var(--brand2);box-shadow:0 0 8px var(--brand2)}
+.bar span{color:#a39a8d}.bar b{font-weight:600}
+.user{display:flex;align-items:center;gap:10px;padding:5px 16px 5px 6px;border-radius:99px;font-size:13px;font-weight:600}
+.user i{width:28px;height:28px;border-radius:50%;background:linear-gradient(160deg,var(--brand2),var(--brand));display:grid;place-items:center;color:#fff;font-style:normal;font-size:12px;box-shadow:0 1px 0 rgba(255,255,255,.4) inset}
+
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:20px;padding:0 4px}
+h1{font-size:32px;letter-spacing:-.01em;font-weight:700;text-shadow:0 1px 0 var(--hi)}
+.head p{color:var(--ink2);font-size:13.5px;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:14px;font:600 13px inherit;font-family:inherit;color:var(--ink);cursor:pointer;border:1px solid rgba(255,255,255,.6);background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:var(--raise);transition:.12s}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{box-shadow:var(--sink);transform:translateY(1px)}
+
+/* ===== KPI ===== */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.kpi{padding:18px 20px;position:relative;overflow:hidden;transition:.2s}
+.kpi:hover{transform:translateY(-3px)}
+.kpi label{font-size:12px;color:var(--ink2);font-weight:600;display:flex;align-items:center;gap:8px}
+.kpi label i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 1px 2px rgba(0,0,0,.35) inset,0 0 0 2px var(--card1),0 0 0 3px rgba(0,0,0,.08)}
+.kpi .v{font-size:40px;font-weight:700;letter-spacing:-.02em;margin:8px 0 6px;font-variant-numeric:tabular-nums;text-shadow:0 1px 0 var(--hi)}
+.kpi .s{font-size:12px;color:var(--ink2);display:flex;gap:10px;flex-wrap:wrap}
+.kpi .s b{color:var(--ink);font-weight:600}
+.kpi.teal{background:linear-gradient(160deg,var(--teal1),var(--teal2));border-color:rgba(255,255,255,.25);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 -3px 6px rgba(0,0,0,.2) inset,0 12px 22px rgba(31,107,92,.35)}
+.kpi.teal label,.kpi.teal .s{color:rgba(255,255,255,.82)}
+.kpi.teal .v,.kpi.teal .s b{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.kpi.teal label i{background:#baf5e3;box-shadow:0 0 8px #baf5e3}
+.kpi.hot{background:linear-gradient(160deg,var(--brand2),#d9561f);border-color:rgba(255,255,255,.35);box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 -3px 6px rgba(120,40,0,.25) inset,0 12px 22px rgba(224,97,43,.35)}
+.kpi.hot label,.kpi.hot .s{color:rgba(255,255,255,.88)}
+.kpi.hot .v,.kpi.hot .s b{color:#fff;text-shadow:0 1px 2px rgba(120,40,0,.35)}
+.kpi.hot label i{background:#fff;box-shadow:0 0 8px #fff}
+
+/* ===== table card ===== */
+.card{overflow:hidden}
+/* segmented tabs: 凹んだトレイ + 浮き出たキー */
+.seg{display:flex;gap:4px;padding:6px;margin:18px 18px 4px;width:max-content;max-width:calc(100% - 36px);overflow:auto;border-radius:99px;background:linear-gradient(180deg,rgba(0,0,0,.07),rgba(255,255,255,.3));box-shadow:var(--sink);border:1px solid var(--hair)}
+.tab{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:99px;border:0;background:none;color:var(--ink2);font:600 13px inherit;font-family:inherit;cursor:pointer;white-space:nowrap;transition:.15s}
+.tab em{font-style:normal;font-size:11px;padding:1px 8px;border-radius:99px;background:rgba(110,85,50,.12);box-shadow:0 1px 2px rgba(90,70,45,.2) inset}
+.tab:hover{color:var(--ink)}
+.tab.on,.tab.on:hover{color:#fff;background:linear-gradient(180deg,#5a5349,#2f2b25);box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 4px 10px rgba(0,0,0,.4)}
+.tab.on em{background:linear-gradient(180deg,var(--brand2),var(--brand));color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.4) inset}
+
+.tools{display:flex;gap:12px;padding:14px 18px 18px;align-items:center}
+.search{flex:1;max-width:420px;position:relative}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--ink3);fill:none;stroke-width:2}
+input,select{font-family:inherit;font-size:13.5px;color:var(--ink);color-scheme:light;background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(255,255,255,.35));border:1px solid rgba(120,95,60,.18);border-radius:14px;padding:11px 14px;outline:0;box-shadow:var(--sink);transition:.15s}
+.search input{width:100%;padding-left:40px}
+input::placeholder{color:var(--ink3)}
+input:focus,select:focus{border-color:rgba(224,97,43,.6);box-shadow:var(--sink),0 0 0 3px rgba(224,97,43,.18)}
+.tools .sp{margin-left:auto;display:flex;gap:10px}
+.scroll{overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px;min-width:980px}
+th{text-align:left;font-size:11.5px;color:var(--ink2);font-weight:600;letter-spacing:.04em;padding:12px 16px;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.02));border-top:1px solid var(--hair);border-bottom:1px solid var(--hi);box-shadow:0 1px 0 var(--hair);white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:13px 16px;border-bottom:1px solid var(--hair);box-shadow:0 1px 0 var(--hi);white-space:nowrap;font-variant-numeric:tabular-nums}
+tbody tr{transition:.12s;cursor:pointer}
+tbody tr:hover{background:linear-gradient(90deg,rgba(224,97,43,.10),rgba(255,255,255,.4))}
+tbody tr:last-child td{border-bottom:0;box-shadow:none}
+.co{display:flex;align-items:center;gap:12px;font-weight:600}
+.av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(160deg,var(--c1),var(--c2));box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 -2px 4px rgba(0,0,0,.25) inset,0 4px 8px rgba(60,40,20,.28);text-shadow:0 1px 1px rgba(0,0,0,.3);flex:none}
+/* pill: color-mix の色分け + 凹み */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:99px;font-size:12px;font-weight:600;color:var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 20%,transparent),color-mix(in srgb,var(--c) 8%,rgba(255,255,255,.4)));border:1px solid color-mix(in srgb,var(--c) 28%,transparent);box-shadow:0 1px 2px rgba(90,70,45,.18) inset,0 1px 0 var(--hi)}
+.t-企業{--c:#6b6358}.t-代理店{--c:#cf5520}.t-販売店{--c:var(--blue)}.t-デモ{--c:var(--amber)}
+.p-別途請求{--c:var(--violet)}.p-年払い{--c:var(--blue)}.p-月払い{--c:var(--green)}
+.st{--c:var(--green)}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#9df0c8,#1f9a6a);box-shadow:0 0 6px rgba(47,200,140,.8),0 0 0 1px rgba(0,0,0,.15)}
+.dash{color:var(--ink3)}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-top:1px solid var(--hair);box-shadow:0 1px 0 var(--hi) inset;font-size:12.5px;color:var(--ink2)}
+.foot .r{display:flex;gap:10px;align-items:center}
+.foot select{padding:7px 10px;font-size:12.5px}
+.pbtn{padding:8px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.6);background:linear-gradient(180deg,var(--card1),var(--card2));box-shadow:var(--raise);color:var(--ink);font:600 12.5px inherit;font-family:inherit;cursor:pointer}
+.pbtn:active:not(:disabled){box-shadow:var(--sink)}
+.pbtn:disabled{opacity:.45;cursor:default;box-shadow:none}
+.empty{padding:48px;text-align:center;color:var(--ink3)}
+
+@media (max-width:1100px){.app,.app.collapsed{grid-template-columns:1fr}aside{display:none}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}.head{flex-direction:column;align-items:flex-start}.tools{flex-wrap:wrap}.tools .sp{margin-left:0}.app{padding:14px}}
+</style>
+</head>
+<body>
+<div class="bg">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="w1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d9ccb0"/></linearGradient>
+      <linearGradient id="w2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e8cf"/><stop offset="1" stop-color="#d4c5a4"/></linearGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="16"/></filter>
+    </defs>
+    <g filter="url(#b)">
+      <path d="M-100 700C200 450 420 900 760 640S1250 300 1700 520V1100H-100Z" fill="url(#w1)" opacity=".7"/>
+      <path d="M-100 300C240 80 480 520 880 300S1300 40 1700 200V0H-100Z" fill="url(#w2)" opacity=".75"/>
+      <path d="M300 1100C500 620 820 760 1000 520S1400 420 1700 640V1100Z" fill="url(#w2)" opacity=".6"/>
+    </g>
+  </svg>
+</div>
+
+<div class="app" id="app">
+  <aside class="dark">
+    <button class="toggle" id="tg" title="サイドバーの開閉" aria-label="サイドバーの開閉"><svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button>
+    <div class="brand"><div class="logo">x</div><div><b>株式会社xNEXT</b><small>本部</small></div></div>
+    <nav class="nav">
+      <div class="grp">取引先</div>
+      <a class="on" href="#" title="取引先一覧"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg><span class="t">取引先一覧</span><span class="n">1,220</span></a>
+      <a href="#" title="申込URL"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span class="t">申込URL</span></a>
+      <a href="#" title="発行権限"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span class="t">発行権限</span></a>
+      <div class="grp">社割NEXT</div>
+      <a href="#" title="従業員一覧"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg><span class="t">従業員一覧</span><span class="n">11</span></a>
+      <a href="#" title="登録URL"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span class="t">登録URL</span></a>
+      <div class="grp">会員割NEXT</div>
+      <a href="#" title="会員一覧"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.5-1.5 1.7-2 3-2s2.5.5 3 2M15 10h3M15 14h3"/></svg><span class="t">会員一覧</span><span class="n">6</span></a>
+      <a href="#" title="登録URL"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span class="t">登録URL</span></a>
+      <div class="grp">財務</div>
+      <a href="#" title="支払管理"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg><span class="t">支払管理</span></a>
+      <a href="#" title="報酬振込"><svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></svg><span class="t">報酬振込</span></a>
+      <a href="#" title="報酬残高"><svg viewBox="0 0 24 24"><path d="m6 4 6 8 6-8M6 12h12M6 16h12M12 12v8"/></svg><span class="t">報酬残高</span></a>
+      <div class="grp">サポート</div>
+      <a href="#" title="資料アップロード"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M12 17v-6m-3 3 3-3 3 3"/></svg><span class="t">資料アップロード</span></a>
+      <a href="#" title="よくある質問"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></svg><span class="t">よくある質問</span></a>
+      <a href="#" title="お知らせ"><svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1ZM17 9a4 4 0 0 1 0 6"/></svg><span class="t">お知らせ</span></a>
+      <div class="grp">システム</div>
+      <a href="#" title="メンテナンス"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span class="t">メンテナンス</span></a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div class="bar dark"><i class="dot"></i><span>取引先</span> › <b>取引先一覧</b></div>
+      <div class="user dark"><i>d</i>dev</div>
+    </div>
+
+    <div class="head">
+      <div><h1>取引先一覧</h1><p>代理店・販売店・企業の契約状況を一覧で確認します</p></div>
+      <button class="btn" id="csv"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>CSVダウンロード</button>
+    </div>
+
+    <section class="kpis">
+      <div class="kpi raised teal" style="--c:var(--green)"><label><i></i>利用中</label><div class="v">1,064</div><div class="s"><span>代理店 <b>55</b></span><span>販売店 <b>51</b></span><span>企業 <b>958</b></span></div></div>
+      <div class="kpi raised" style="--c:var(--blue)"><label><i></i>仮登録</label><div class="v">6</div><div class="s"><span>代理店 <b>3</b></span><span>販売店 <b>1</b></span><span>企業 <b>2</b></span></div></div>
+      <div class="kpi raised" style="--c:var(--violet)"><label><i></i>無料期間</label><div class="v">2</div><div class="s"><span>企業 <b>2</b></span></div></div>
+      <div class="kpi raised hot"><label><i></i>要対応</label><div class="v">84</div><div class="s"><span>停止 <b>41</b></span><span>解約予定 <b>43</b></span></div></div>
+    </section>
+
+    <section class="card raised">
+      <div class="seg" id="tabs">
+        <button class="tab on" data-t="all">すべて <em>1202</em></button>
+        <button class="tab" data-t="代理店">代理店 <em>72</em></button>
+        <button class="tab" data-t="販売店">販売店 <em>84</em></button>
+        <button class="tab" data-t="企業">企業 <em>1046</em></button>
+        <button class="tab" data-t="デモ">デモ <em>20</em></button>
+      </div>
+      <div class="tools">
+        <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="会社名で検索"></div>
+        <div class="sp">
+          <select id="fp"><option value="">すべてのプラン</option><option>別途請求</option><option>年払い</option><option>月払い</option></select>
+          <select id="fs"><option value="">すべての契約状況</option><option>利用中</option></select>
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>会社名</th><th>種別</th><th class="r">社割</th><th class="r">会員割</th><th class="r">配下組織</th><th>プラン</th><th>利用開始日</th><th>更新期限</th><th>契約状況</th></tr></thead>
+          <tbody id="tb"></tbody>
+        </table>
+      </div>
+      <div class="foot">
+        <span id="cnt"></span>
+        <div class="r">
+          <select id="per"><option>20</option><option>10</option></select><span>件/ページ</span>
+          <button class="pbtn" id="prev">前へ</button><button class="pbtn" id="next">次へ</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const D=[
+["株式会社Genics","企業",4,"—","—","年払い","2026/11/19","2027/11/18"],
+["株式会社経営工房","企業",1,"—","—","別途請求","2026/11/19","—"],
+["株式会社結ホールディングス","企業",0,"—","—","別途請求","2026/11/19","—"],
+["株式会社CAPES","企業",5,"—","—","年払い","2026/11/19","2027/11/18"],
+["株式会社ホワイトルーム","代理店",0,"—","0","月払い","2026/11/19","2027/11/18"],
+["てすと","企業",0,"—","—","別途請求","2026/11/18","—"],
+["ジャパンラーニング株式会社","企業",7,"—","—","別途請求","2026/11/18","—"],
+["株式会社CHALLENGE LIFE","企業",1,"—","—","別途請求","2026/11/17","—"],
+["有限会社マックス","企業",0,"—","—","別途請求","2026/11/17","—"],
+["ウェルネスサポートプラス株式会社","企業",0,"—","—","別途請求","2026/11/17","—"],
+["nail&beauty 美遊 -miu-","企業",0,"—","—","別途請求","2026/11/17","—"],
+["日建リゾート株式会社","企業",0,"—","—","別途請求","2026/11/17","—"],
+["吉田　翔一","企業",1,"—","—","別途請求","2026/11/17","—"],
+["(株)日建ハウジング","企業",0,"—","—","別途請求","2026/11/17","—"],
+["ネクスピュア株式会社","企業",6,"—","—","年払い","2026/11/17","2027/11/11"],
+["株式会社LIEN","企業",0,"—","—","別途請求","2026/11/16","—"],
+["尾崎由美子","企業",0,"—","—","別途請求","2026/11/16","—"],
+["株式会社ビューティーシステム","企業",1,"—","—","別途請求","2026/11/13","—"],
+["有限会社デジタルファクトリー","企業",2,"—","—","別途請求","2026/11/13","—"],
+["かなみ音楽教室","企業",1,"—","—","別途請求","2026/11/13","—"]
+].map(r=>({name:r[0],type:r[1],emp:r[2],mem:r[3],sub:r[4],plan:r[5],start:r[6],renew:r[7],status:"利用中"}));
+const G=[["#5fb89f","#2a7a68"],["#9a7cc4","#5f4390"],["#6b97d6","#3a64a8"],["#e0a548","#a8741a"],["#d98a8a","#a8493f"],["#8a8174","#4a443c"]];
+const st={t:"all",q:"",p:"",s:"",page:1,per:20};
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const dash=v=>v==="—"?'<span class="dash">—</span>':v;
+function render(){
+  const rows=D.filter(r=>(st.t==="all"||r.type===st.t)&&r.name.toLowerCase().includes(st.q.toLowerCase())&&(!st.p||r.plan===st.p)&&(!st.s||r.status===st.s));
+  const pages=Math.max(1,Math.ceil(rows.length/st.per));st.page=Math.min(st.page,pages);
+  const s=(st.page-1)*st.per,part=rows.slice(s,s+st.per);
+  $("tb").innerHTML=part.length?part.map(r=>{const g=G[(r.name.charCodeAt(0)+r.name.length)%G.length];
+    return `<tr><td><div class="co"><span class="av" style="--c1:${g[0]};--c2:${g[1]}">${esc(r.name.replace(/^(株式会社|有限会社|\(株\))/,"")[0]||r.name[0])}</span>${esc(r.name)}</div></td>
+    <td><span class="pill t-${r.type}">${r.type}</span></td><td class="r">${r.emp}</td><td class="r">${dash(r.mem)}</td><td class="r">${dash(r.sub)}</td>
+    <td><span class="pill p-${r.plan}">${r.plan}</span></td><td>${r.start}</td><td>${dash(r.renew)}</td><td><span class="pill st">${r.status}</span></td></tr>`}).join(""):`<tr><td colspan="9" class="empty">該当する取引先がありません</td></tr>`;
+  const full=st.t==="all"&&!st.q&&!st.p&&!st.s;
+  $("cnt").textContent=full?`1202 件中 ${s+1}-${s+part.length} 件を表示`:`${rows.length} 件が該当（サンプル表示）`;
+  $("prev").disabled=st.page<=1;$("next").disabled=st.page>=pages;
+}
+$("tabs").onclick=e=>{const b=e.target.closest(".tab");if(!b)return;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");st.t=b.dataset.t;st.page=1;render()};
+$("q").oninput=e=>{st.q=e.target.value;st.page=1;render()};
+$("fp").onchange=e=>{st.p=e.target.value;st.page=1;render()};
+$("fs").onchange=e=>{st.s=e.target.value;st.page=1;render()};
+$("per").onchange=e=>{st.per=+e.target.value;st.page=1;render()};
+$("prev").onclick=()=>{st.page--;render()};$("next").onclick=()=>{st.page++;render()};
+$("tg").onclick=()=>$("app").classList.toggle("collapsed");
+document.querySelectorAll(".nav a").forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll(".nav a").forEach(x=>x.classList.remove("on"));a.classList.add("on")});
+render();
+</script>
+</body>
+</html>
